@@ -1,20 +1,10 @@
-import { User } from "@prisma/client"
 import { FastifyInstance, FastifyPluginOptions } from "fastify"
 
 async function routes(fastify: FastifyInstance, options: FastifyPluginOptions) {
-    fastify.get('/', async () => {
+    fastify.get('/', async (request) => {
         const users = await fastify.prisma.user.findMany()
+        console.log(request.user)
         return users
-    })
-
-    fastify.post('/', async (request) => {
-        const { email, name, password } = request.body as User
-        const user = await fastify.prisma.user.create({
-            data: {
-                email, name, password
-            }
-        })
-        return user
     })
 
     fastify.get('/:id', async (request, reply) => {

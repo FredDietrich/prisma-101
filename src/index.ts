@@ -1,16 +1,17 @@
-import { PrismaClient } from "@prisma/client";
+import fastifyJwt from "@fastify/jwt";
 import Fastify from "fastify";
-import phonebookRoute from "./routes/phonebook.route";
-import userRoute from './routes/user.route'
 import prismaPlugin from "./plugins/prisma.plugin";
+import { adminRoutes } from "./routes/admin.routes";
+import { loginRoute } from "./routes/login.route";
 
-const fastify = Fastify({
-    logger: true,
-})
+const fastify = Fastify()
 
-fastify.register(prismaPlugin)
-fastify.register(phonebookRoute, { prefix: '/phonebook' })
-fastify.register(userRoute, { prefix: '/user' })
+fastify
+    .register(fastifyJwt, { secret: process.env.JWT_SECRET || 'super-secret' })
+    .register(prismaPlugin)
+    .register(loginRoute)
+    .register(adminRoutes)
+
 async function main() {
     try {
         await fastify.listen({ port: 3000 })
